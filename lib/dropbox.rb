@@ -38,7 +38,7 @@ class Dbox
     files.each do |file_info|
       file = open(file_info[:filepath])
       response = @client.put_file(file_info[:filename], file)
-      puts response
+      # TODO: log or do something with dropbox response 
     end
   end
 

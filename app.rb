@@ -8,10 +8,10 @@ class App
   class << self
     def start
       mail = Mailgun.new({:api_key => App::MAILGUN_API_KEY, :domain => App::MAILGUN_DOMAIN})
-
+      
       # retrieve all stored messages
       messages = mail.get_messages #TODO: stub for testing
-      # messages = [{'body-plain' => 'asfd sdaf http://www.relacweb.org/menuconferencia/menu/manual-memorias.pdf sdljfi', 'subject' => "This is a nice $#^&day"}]
+      # messages = [{'body-plain' => 'asdf  asfd sdaf http://www.axmag.com/download/pdfurl-guide.pdf http://www.relacweb.org/menuconferencia/menu/manual-memorias.pdf sdljfi', 'subject' => "This is a nice $#^&day"}]
 
       # perform grab link, download, upload to Dropbox
       messages.each do |message| 
@@ -22,6 +22,8 @@ class App
         dl_files = download(pdf_urls, subject)
         upload_to_dropbox(dl_files)
       end
+
+      mail.delete_messages
     end
 
     def extract_pdf_urls content

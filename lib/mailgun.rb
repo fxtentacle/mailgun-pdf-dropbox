@@ -4,20 +4,27 @@ class Mailgun # TODO: need to handle exceptions, e.g API Requests error, Bad req
   def initialize params
     @api_key = params[:api_key]  
     @domain = params[:domain]  
+    @msg_urls = []
   end
 
   # returns all stored messages as an array of hash
   def get_messages 
     events = JSON.parse(retrieve_events(:stored))
-    msg_urls = events['items'].map do |item|
+    @msg_urls = events['items'].map do |item|
       item['storage']['url']
     end
 
-    messages = msg_urls.map do |url|
+    messages = @msg_urls.map do |url|
       JSON.parse retrieve_message(url)
     end
 
     messages
+  end
+
+  def delete_messages
+    @msg_urls.each do |url|
+      RestClient.delete url
+    end
   end
 
   def retrieve_events type
