@@ -1,0 +1,18 @@
+{"items"=>
+
+{"tags"=>[],
+"timestamp"=>1387607045.708226,
+"campaigns"=>[],
+"user-variables"=>{},
+"flags"=>{"is-test-mode"=>false},
+"reject"=>{"reason"=>"account_disabled",
+"description"=>"Business verification is required. Please contact support: support@mailgunhq.com."},
+"message"=>{"headers"=>{"to"=>"postmaster@sandbox10211.mailgun.org",
+"message-id"=>"CAJy0mRiB4S7xAxEPyezpLHkthAAfb1TQvPzD3Rok1egOms7nrw@mail.gmail.com",
+"from"=>"Nguyen Minh Hieu <ngnmhieu@gmail.com>",
+"subject"=>"Hello"},
+"attachments"=>[],
+"recipients"=>[],
+"size"=>1705},
+"recipient"=>"postmaster@sandbox10211.mailgun.org",
+"event"=>"rejected"}
