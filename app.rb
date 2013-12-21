@@ -1,19 +1,17 @@
 require 'uri'
 require 'open-uri'
-require 'dropbox_sdk'
 require './config/config.rb'
 require './lib/mailgun.rb'
 require './lib/dropbox.rb'
 
 class App
-
   class << self
     def start
-      Mailgun.configuration({:api_key => App::MAILGUN_API_KEY, :domain => App::MAILGUN_DOMAIN})
+      mail = Mailgun.new({:api_key => App::MAILGUN_API_KEY, :domain => App::MAILGUN_DOMAIN})
 
       # retrieve all stored messages
-      # messages = Mailgun.get_messages #TODO: stub suck
-      messages = [{'body-plain' => 'asfd sdaf http://www.relacweb.org/menuconferencia/menu/manual-memorias.pdf sdljfi', 'subject' => "This is a nice $#^&day"}]
+      messages = mail.get_messages #TODO: stub for testing
+      # messages = [{'body-plain' => 'asfd sdaf http://www.relacweb.org/menuconferencia/menu/manual-memorias.pdf sdljfi', 'subject' => "This is a nice $#^&day"}]
 
       # perform grab link, download, upload to Dropbox
       messages.each do |message| 
@@ -22,7 +20,7 @@ class App
         pdf_urls = extract_pdf_urls(body)
 
         dl_files = download(pdf_urls, subject)
-        # upload_to_dropbox(dl_files)
+        upload_to_dropbox(dl_files)
       end
     end
 
@@ -55,7 +53,8 @@ class App
     def upload_to_dropbox files
       dropbox = Dbox.new({
         :app_key => App::DROPBOX_APP_KEY,
-        :app_secret => App::DROPBOX_APP_SECRET
+        :app_secret => App::DROPBOX_APP_SECRET,
+        :access_token_file => App::DROPBOX_ACCESS_TOKEN_CACHE
       })
       dropbox.upload(files) if dropbox.authorized?
     end

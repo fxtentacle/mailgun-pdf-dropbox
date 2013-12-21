@@ -6,6 +6,8 @@ class App
   DROPBOX_APP_KEY = 'twhnjq4nptnjlhp'
   DROPBOX_APP_SECRET = 'n8sdjssf58mve2q'
   ########### PATH TO SAVE PDF FILES ################
-  FILE_DIR = '/home/hieusun/programming/projects/mailgun_pdf/files/'
+  APPROOT = '/home/hieusun/programming/projects/mailgun_pdf'
+  DROPBOX_ACCESS_TOKEN_CACHE = File.join(APPROOT, 'access_token.dat')
+  FILE_DIR = File.join(APPROOT,'files')
   ##################################################
 end
