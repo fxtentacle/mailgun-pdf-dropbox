@@ -12,5 +12,8 @@ gem 'dropbox-sdk'
 # sending api request to mailgun
 gem 'rest-client'
 
-# mailgun wrapper
-# gem 'mailgun'
+# auto testing
+gem 'ZenTest' # not working yet
+
+# stub out external service/api
+gem 'webmock'

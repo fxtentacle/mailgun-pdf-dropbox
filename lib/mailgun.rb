@@ -21,7 +21,7 @@ class Mailgun # TODO: need to handle exceptions, e.g API Requests error, Bad req
     messages
   end
 
-  def delete_messages
+  def delete_messages # should return something to indicate successful
     @msg_urls.each do |url|
       RestClient.delete url
     end
