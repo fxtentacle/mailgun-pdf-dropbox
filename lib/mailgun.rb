@@ -9,13 +9,13 @@ class Mailgun # TODO: need to handle exceptions, e.g API Requests error, Bad req
 
   # returns all stored messages as an array of hash
   def get_messages 
-    events = JSON.parse(retrieve_events(:stored))
+    events = retrieve_events(:stored)
     @msg_urls = events['items'].map do |item|
       item['storage']['url']
     end
 
     messages = @msg_urls.map do |url|
-      JSON.parse retrieve_message(url)
+      retrieve_message(url)
     end
 
     messages
@@ -28,13 +28,13 @@ class Mailgun # TODO: need to handle exceptions, e.g API Requests error, Bad req
   end
 
   def retrieve_events type
-    RestClient.get events_url, :params => {
+    JSON.parse(RestClient.get events_url, :params => {
       :event => type.to_s
-    }
+    })
   end
 
   def retrieve_message url
-    RestClient.get url
+    JSON.parse(RestClient.get url)
   end
 
   def base_url

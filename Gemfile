@@ -13,7 +13,7 @@ gem 'dropbox-sdk'
 gem 'rest-client'
 
 # auto testing
-gem 'ZenTest' # not working yet
+# gem 'ZenTest' # not working yet
 
 # stub out external service/api
 gem 'webmock'

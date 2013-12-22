@@ -63,5 +63,3 @@ class App
 
   end
 end
-
-App.start
