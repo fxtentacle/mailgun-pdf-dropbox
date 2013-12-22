@@ -1,5 +1,9 @@
 require 'dropbox_sdk'
 
+# filename: dropbox.rb
+# desc: contains methods for authorizing user (login)
+#       and after that, upload files to Dropbox
+
 class Dbox 
   def initialize params
     @app_key = params[:app_key]
@@ -9,7 +13,7 @@ class Dbox
     @client = nil 
   end
 
-  def authorized?
+  def authorized? # see if an access token has been load from a file
     !!@access_token
   end
 

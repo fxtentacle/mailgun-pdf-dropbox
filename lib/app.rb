@@ -1,15 +1,16 @@
 require 'uri'
 require 'open-uri'
-require_relative 'mailgun.rb'
+require File.join(App::APPROOT,'/lib/mailgun.rb')
+require File.join(App::APPROOT,'/lib/dropbox.rb')
+
+# filename: app.rb
+# desc: core class which controls the process (App.start)
 
 class App
-  # Configurations
-  MAIL_API_KEY = 'key-21ayc-i-p20k9aw9gcg2toueux58r2p4'   
-  MAIL_DOMAIN = 'sandbox10211.mailgun.org'
-
   class << self
     def start
-      mail = Mailgun.new(MAIL_API_KEY, MAIL_DOMAIN)
+      mail = Mailgun.new({:api_key => App::MAILGUN_API_KEY, :domain => App::MAILGUN_DOMAIN})
+      
       # retrieve all stored messages
       messages = mail.get_messages
 
@@ -17,23 +18,62 @@ class App
       messages.each do |message| 
         body = message['body-plain']
         subject = message['subject']
-        pdf_urls = extract_pdf_links(body)
-        @dl_files = download(@pdf_urls, subject)
+        pdf_urls = extract_pdf_urls(body)
+        
+        # TODO: need pull these thing out of a loop
+        dl_files = download(pdf_urls, subject)
+        upload_to_dropbox(dl_files)
       end
+
+      # delete processed messages
+      puts "Deleteing old messages..." 
+      mail.delete_messages
     end
 
-    # should be private but public make testing easier
-    def download urls, subject 
-      puts urls
-    end
-
-    def extract_pdf_links content
+    def extract_pdf_urls content
+      urls = []
       urls = URI.extract(content).select do |url|
         url if url =~ /\.pdf/
-      end if body.is_a? String
+      end if content.is_a? String
+
+      urls
+    end
+
+    def download urls, subject 
+      dir = App::FILE_DIR
+      Dir.mkdir(dir) unless File.directory?(dir)
+      files = []
+      urls.each_index do |i| # TODO: if filename duplicate?
+        filename = subject.gsub(/\s|\W/, '') + "_#{i}.pdf"
+        filepath = File.join(dir, filename)
+
+        File.open(filepath, 'wb') do |file|
+          # TODO: what errors could occur?
+          file << open(urls[i]).read
+        end
+        files << {filename: filename, filepath: filepath}
+      end
+
+      files
+    end
+
+    def upload_to_dropbox files
+      dropbox = Dbox.new({
+        :app_key => App::DROPBOX_APP_KEY,
+        :app_secret => App::DROPBOX_APP_SECRET,
+        :access_token_file => App::DROPBOX_ACCESS_TOKEN_CACHE
+      })
+      dropbox.upload(files) if dropbox.authorized?
+    end
+
+    def say_hello
+      File.open('/home/hieusun/programming/projects/mailgun_pdf/test.txt', 'a') do |file|
+        file.puts("Hello....")
+      end
     end
 
   end
 end
 
-App.start
+# for testing
+# messages = [{'body-plain' => 'asdf  asfd sdaf http://www.axmag.com/download/pdfurl-guide.pdf http://www.relacweb.org/menuconferencia/menu/manual-memorias.pdf sdljfi', 'subject' => "This is a nice $#^&day"}]

@@ -1,6 +1,10 @@
 require 'rest-client'
 
-class Mailgun # TODO: need to handle exceptions, e.g API Requests error, Bad request...
+# filename: mailgun.rb
+# desc: contains some methods contacting the Mailgun API
+#       and parsing the result
+
+class Mailgun # TODO: handle exceptions
   def initialize params
     @api_key = params[:api_key]  
     @domain = params[:domain]  
@@ -10,37 +14,53 @@ class Mailgun # TODO: need to handle exceptions, e.g API Requests error, Bad req
   # returns all stored messages as an array of hash
   def get_messages 
     events = retrieve_events(:stored)
-    @msg_urls = events['items'].map do |item|
-      item['storage']['url']
+    @msg_keys = events['items'].map do |item|
+      item['storage']['key']
     end
 
-    messages = @msg_urls.map do |url|
-      retrieve_message(url)
+    messages = @msg_keys.map do |key|
+      retrieve_message(key)
     end
 
     messages
   end
 
-  def delete_messages # should return something to indicate successful
-    @msg_urls.each do |url|
-      RestClient.delete url
+  # TODO: should return something to indicate successful deletion
+  def delete_messages 
+    @msg_keys.each do |key|
+      begin
+        RestClient.delete message_url(key)
+      rescue
+      end
     end
   end
 
   def retrieve_events type
-    JSON.parse(RestClient.get events_url, :params => {
-      :event => type.to_s
-    })
+    begin
+      JSON.parse(RestClient.get events_url, :params => {
+        :event => type.to_s
+      })
+    rescue
+      return {'items' => []}
+    end
   end
 
-  def retrieve_message url
-    JSON.parse(RestClient.get url)
+  def retrieve_message msg_key
+    begin
+      JSON.parse(RestClient.get message_url(msg_key))
+    rescue
+      return {'items' => []}
+    end
   end
 
   def base_url
     "https://api:#{@api_key}@api.mailgun.net/v2"
   end
 
+  def message_url msg_key
+    "https://api:#{@api_key}@api.mailgun.net/v2/domains/#{@domain}/messages/#{msg_key}"
+  end
+  
   def events_url
     "#{base_url}/#{@domain}/events"
   end

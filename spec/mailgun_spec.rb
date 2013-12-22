@@ -34,12 +34,6 @@ describe Mailgun do
       message = Mailgun.new({:api_key => '', :domain => ''}).retrieve_message('https://api.mailgun.net/v2/domains/mydomain.com/messages/WyJhOTM4NDk1ODA3Iiw')
       message.should == @test_message
     end
-
-    it 'bad path!!!!!!'
-  end
-
-  describe :delete_messages do
-    it 'should be tested!!!!!!!!'
   end
 
   describe 'url helper' do
@@ -54,6 +48,14 @@ describe Mailgun do
         mail.base_url.should == "https://api:#{@test_api}@api.mailgun.net/v2"
       end
     end
+    describe :message_url do
+      it 'should return correct base url, given the api' do
+        test_key = 'somekeykeykey'
+        mail = Mailgun.new({:api_key => @test_api, :domain => @test_domain})
+        mail.message_url(test_key).should == "https://api:#{@test_api}@api.mailgun.net/v2/domains/#{@test_domain}/messages/#{test_key}"
+ 
+      end
+    end
     describe :events_url do
       it 'should return correct events url, given the api and domain' do
         Mailgun.any_instance.stub(:base_url).and_return("https://api:#{@test_api}@api.mailgun.net/v2")
@@ -62,5 +64,11 @@ describe Mailgun do
       end
     end
   end
+
+  describe :delete_messages do
+    it 'should be tested!!!!!!!!'
+  end
+
+  it 'bad pathhhh'
 
 end
