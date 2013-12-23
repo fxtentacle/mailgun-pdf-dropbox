@@ -4,7 +4,7 @@ require 'rest-client'
 # desc: contains some methods contacting the Mailgun API
 #       and parsing the result
 
-class Mailgun # TODO: handle exceptions
+class Mailgun # TODO: handle exceptions !!!!!!
   def initialize params
     @api_key = params[:api_key]  
     @domain = params[:domain]  
@@ -12,10 +12,10 @@ class Mailgun # TODO: handle exceptions
   end
 
   # returns all stored messages as an array of hash
-  def get_messages 
-    events = retrieve_events(:stored)
+  def get_messages events
+
     @msg_keys = events['items'].map do |item|
-      item['storage']['key']
+      item['storage']['key'] if item['event'] == 'stored'
     end
 
     messages = @msg_keys.map do |key|
@@ -25,7 +25,6 @@ class Mailgun # TODO: handle exceptions
     messages
   end
 
-  # TODO: should return something to indicate successful deletion
   def delete_messages 
     @msg_keys.each do |key|
       begin
@@ -35,11 +34,13 @@ class Mailgun # TODO: handle exceptions
     end
   end
 
-  def retrieve_events type
+  def retrieve_events(type,from=nil)
     begin
-      JSON.parse(RestClient.get events_url, :params => {
-        :event => type.to_s
-      })
+      params = {}
+      params[:event] = type.to_s
+      params[:end] = from if from != nil
+
+      JSON.parse(RestClient.get(events_url, :params => params))
     rescue
       return {'items' => []}
     end
@@ -48,7 +49,7 @@ class Mailgun # TODO: handle exceptions
   def retrieve_message msg_key
     begin
       JSON.parse(RestClient.get message_url(msg_key))
-    rescue
+    rescue => e
       return {'items' => []}
     end
   end

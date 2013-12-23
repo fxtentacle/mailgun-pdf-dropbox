@@ -10,11 +10,20 @@ class Dbox
     @app_secret = params[:app_secret]
     @access_token_file = params[:access_token_file]
     @access_token = load_access_token() # read from file
-    @client = nil 
+    @client = @access_token == nil ? nil : DropboxClient.new(@access_token)
   end
 
   def authorized? # see if an access token has been load from a file
-    !!@access_token
+    return @is_authorized unless @is_authorized.nil?
+
+    begin
+      @client.account_info # account_info will raise exception if not authenticated
+      @is_authorized = true 
+    rescue DropboxAuthError
+      @is_authorized = false
+    end
+
+    @is_authorized
   end
 
   def authorize
@@ -38,7 +47,6 @@ class Dbox
   def upload files 
     return unless authorized?
 
-    @client = DropboxClient.new(@access_token)
     files.each do |file_info|
       file = open(file_info[:filepath])
       response = @client.put_file(file_info[:filename], file)

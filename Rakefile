@@ -5,4 +5,11 @@ namespace :app do
   end
 end
 
+namespace :dropbox do
+  desc "Login Dropbox before being able to upload files"
+  task :login do
+    require_relative './dropbox_login.rb'
+  end
+end
+
 task :default => 'app:run'
