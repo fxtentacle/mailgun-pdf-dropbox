@@ -40,7 +40,12 @@ class App
       # grab pdf url 
       pdfs = []
       messages.each do |message| 
-        pdfs << extract_pdfs(message)
+        rcpt = message["recipients"]
+        file_filter = ""
+        if rcpt =~ /^store-in-dropbox\+(.*)@/
+          file_filter = $1
+        end
+        pdfs << extract_files(message, file_filter)
       end
 
       puts "Downloading files..." 
@@ -83,17 +88,19 @@ class App
       time
     end
 
-    def extract_pdfs message
+    def extract_files( message, file_filter )
       pdfs = []
       content = message['stripped-text']
       attachments = message['attachments']
  
-      URI.extract(content).each do |url|
-        pdfs << {url: url, subject: message['subject']} if url =~ /\.pdf/
-      end if content.is_a? String
+      if false
+        URI.extract(content).each do |url|
+          pdfs << {url: url, subject: message['subject']} if url =~ /\.#{file_filter}/
+        end if content.is_a? String
+      end
       
       attachments.each do |att| 
-        pdfs << {filename: att["name"], url: att["url"], subject: message['subject']}
+        pdfs << {filename: att["name"], url: att["url"], subject: message['subject']} if (att["name"] =~ /\.#{file_filter}/) || (att["content-type"] =~ /#{file_filter}$/)
       end if attachments
 
       pdfs 
