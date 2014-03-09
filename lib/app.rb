@@ -100,7 +100,7 @@ class App
       end
       
       attachments.each do |att| 
-        pdfs << {filename: att["name"], url: att["url"], subject: message['subject']} if (att["name"] =~ /\.#{file_filter}/) || (att["content-type"] =~ /#{file_filter}$/)
+        pdfs << {filename: att["name"], url: att["url"], subject: message['subject']} if (att["name"] =~ /\.#{file_filter}/) || (att["content-type"] =~ /\/#{file_filter}$/)
       end if attachments
 
       pdfs 
