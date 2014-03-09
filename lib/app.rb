@@ -42,10 +42,15 @@ class App
       messages.each do |message| 
         rcpt = message["recipients"]
         file_filter = ""
-        if rcpt =~ /^store-in-dropbox\+(.*)@/
+        file_tag = ""
+        if rcpt =~ /^store-in-dropbox\+([^+]*)@/
           file_filter = $1
         end
-        mypdfs = extract_files(message, file_filter)
+        if rcpt =~ /^store-in-dropbox\+([^+]*)\+([^+]*)@/
+          file_filter = $1
+          file_tag = "#{$2} "
+        end
+        mypdfs = extract_files(message, file_filter, file_tag)
         if mypdfs.length == 0
           @mail.send_report(message["From"], "Could not find files", "Could not extract attachments with filter \"#{file_filter}\" from your email \"#{message['subject']}\". Available attachments: #{message['attachments'].to_json}")
         end
@@ -92,7 +97,7 @@ class App
       time
     end
 
-    def extract_files( message, file_filter )
+    def extract_files( message, file_filter, file_tag)
       pdfs = []
       content = message['stripped-text']
       attachments = message['attachments']
@@ -104,7 +109,7 @@ class App
       end
       
       attachments.each do |att| 
-        pdfs << {filename: att["name"], url: att["url"], subject: message['subject']} if (att["name"] =~ /\.#{file_filter}/) || (att["content-type"] =~ /\/#{file_filter}$/)
+        pdfs << {filename: file_tag+att["name"], url: att["url"], subject: message['subject']} if (att["name"] =~ /\.#{file_filter}/) || (att["content-type"] =~ /\/#{file_filter}$/)
       end if attachments
 
       pdfs 
