@@ -26,8 +26,7 @@ class App
 
       # stop if dropbox hasn't been authorized
       if not @dropbox.authorized?
-        puts "Please authorize dropbox first."
-        return
+        raise DropboxError.new("Please authorize dropbox first.")
       end
 
       # get all the events, beginning from `time_latest` till now

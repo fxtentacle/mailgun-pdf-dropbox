@@ -1,8 +1,5 @@
 source 'https://rubygems.org'
 
-# schedule cron job
-gem 'whenever'
-
 # rspec for testing
 gem 'rspec', :require => 'spec'
 
