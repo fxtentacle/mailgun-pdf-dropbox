@@ -3,3 +3,5 @@ config/config.rb
 config/access_token.dat
 
 /files/
+
+/config/latest_mail_time.dat
