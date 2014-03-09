@@ -45,7 +45,7 @@ class Dbox
 
   # TODO: should some how log the file for later resume uploading if not authorized
   def upload files 
-    return unless authorized?
+    raise DropboxError.new("not authorized") unless authorized?
 
     files.each do |file_info|
       file = open(file_info[:filepath])

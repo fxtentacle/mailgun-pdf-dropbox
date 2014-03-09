@@ -27,31 +27,20 @@ class Mailgun # TODO: handle exceptions !!!!!!
 
   def delete_messages 
     @msg_keys.each do |key|
-      begin
-        RestClient.delete message_url(key)
-      rescue
-      end
+      RestClient.delete message_url(key)
     end
   end
 
   def retrieve_events(type,from=nil)
-    begin
-      params = {}
-      params[:event] = type.to_s
-      params[:end] = from if from != nil
+    params = {}
+    params[:event] = type.to_s
+    params[:end] = from if from != nil
 
-      JSON.parse(RestClient.get(events_url, :params => params))
-    rescue
-      return {'items' => []}
-    end
+    JSON.parse(RestClient.get(events_url, :params => params))
   end
 
   def retrieve_message msg_key
-    begin
-      JSON.parse(RestClient.get message_url(msg_key))
-    rescue => e
-      return {'items' => []}
-    end
+    JSON.parse(RestClient.get message_url(msg_key))
   end
 
   def base_url
