@@ -46,7 +46,7 @@ class App
           file_filter = $1
         end
         mypdfs = extract_files(message, file_filter)
-        if pdfs.length == 0
+        if mypdfs.length == 0
           @mail.send_report(message["From"], "Could not find files", "Could not extract attachments with filter \"#{file_filter}\" from your email. Available attachments: #{message['attachments'].to_json}")
         end
         pdfs << mypdfs
