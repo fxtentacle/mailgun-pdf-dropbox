@@ -14,3 +14,5 @@ gem 'rest-client'
 
 # stub out external service/api
 gem 'webmock'
+
+gem 'rake'
