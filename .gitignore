@@ -1,3 +1,5 @@
 config/config.rb
 
 config/access_token.dat
+
+/files/
