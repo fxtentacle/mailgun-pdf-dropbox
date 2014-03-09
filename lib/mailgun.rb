@@ -30,6 +30,16 @@ class Mailgun # TODO: handle exceptions !!!!!!
       RestClient.delete message_url(key)
     end
   end
+  
+  def send_report(to, subj, body) 
+    RestClient::Request.new(
+              :method => :post,
+              :url => messages_url,
+              :user => "api",
+              :password => @api_key,
+              :payload => {:to => to, :subject => subj, :text => body, :from => "system@automate.hajo.me"}
+            ).execute
+  end
 
   def retrieve_events(type,from=nil)
     params = {}
@@ -49,6 +59,10 @@ class Mailgun # TODO: handle exceptions !!!!!!
 
   def message_url msg_key
     "https://api:#{@api_key}@api.mailgun.net/v2/domains/#{@domain}/messages/#{msg_key}"
+  end
+  
+  def messages_url
+    "https://api.mailgun.net/v2/#{@domain}/messages"
   end
   
   def events_url

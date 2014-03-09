@@ -45,7 +45,11 @@ class App
         if rcpt =~ /^store-in-dropbox\+(.*)@/
           file_filter = $1
         end
-        pdfs << extract_files(message, file_filter)
+        mypdfs = extract_files(message, file_filter)
+        if pdfs.length == 0
+          @mail.send_report(message["From"], "Could not find files", "Could not extract attachments with filter \"#{file_filter}\" from your email. Available attachments: #{message['attachments'].to_json}")
+        end
+        pdfs << mypdfs
       end
 
       puts "Downloading files..." 
