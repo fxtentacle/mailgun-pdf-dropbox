@@ -121,9 +121,9 @@ class App
       files = []
       pdfs.each_index do |i|
         params = {}
-        is_mailgun = (pdfs[i][:url] =~ /api\.mailgun\.net/) ? true : false
-        params = { :http_basic_authentication=> ["api",App::MAILGUN_API_KEY] } if is_mailgun
         url = pdfs[i][:url]
+        is_mailgun = (url =~ /api[^.]*\.mailgun\.net/) ? true : false
+        params = { :http_basic_authentication=> ["api",App::MAILGUN_API_KEY] } if is_mailgun
         filename = make_filename(pdfs[i],i,dir)
         filepath = File.join(dir, filename)
 
